@@ -2,93 +2,106 @@ import { ACTORS } from "../table-names";
 
 export const selectActorByName = (fullName: string): string => {
   return `
-  SELECT *
-  FROM Actors
-  WHERE full_name = '${fullName}'`
+    SELECT *
+    FROM Actors
+    WHERE full_name = '${fullName}'
+  `
 };
 
 export const selectKeyword = (keyword: string): string => {
   return `
-  SELECT *
-  FROM Keywords
-  WHERE keyword = '${keyword}'`
+    SELECT *
+    FROM Keywords
+    WHERE keyword = '${keyword}'
+  `
 };
 
 export const selectDirector = (director: string): string => {
   return `
-  SELECT *
-  FROM Directors
-  WHERE full_name = '${director}'`
+    SELECT *
+    FROM Directors
+    WHERE full_name = '${director}'
+  `
 };
 
 export const selectGenre = (genre: string): string => {
   return `
-  SELECT *
-  FROM Genres
-  WHERE genre = '${genre}'`
+    SELECT *
+    FROM Genres
+    WHERE genre = '${genre}'
+  `
 };
 
 export const selectProductionCompany = (company: string): string => {
   return `
-  SELECT *
-  FROM Production_companies
-  WHERE company_name = '${company}'`
+    SELECT *
+    FROM Production_companies
+    WHERE company_name = '${company}'
+  `
 };
 
 export const selectMovieById = (id: number): string => {
   return `
-  SELECT *
-  FROM Movies
-  WHERE id = '${id}'`
+    SELECT *
+    FROM Movies
+    WHERE id = '${id}'
+  `
 };
 
 export const selectGenreById = (id: number): string => {
   return `
-  SELECT *
-  FROM Genres
-  WHERE id = '${id}'`
+    SELECT *
+    FROM Genres
+    WHERE id = '${id}'
+  `
 };
 
 export const selectDirectorById = (id: number): string => {
   return `
-  SELECT *
-  FROM Directors
-  WHERE id = '${id}'`
+    SELECT *
+    FROM Directors
+    WHERE id = '${id}'
+  `
 };
 
 export const selectActorById = (id: number): string => {
   return `
-  SELECT *
-  FROM Actors
-  WHERE id = '${id}'`
+    SELECT *
+    FROM Actors
+    WHERE id = '${id}'
+  `
 };
 
 export const selectKeywordById = (id: number): string => {
   return `
-  SELECT *
-  FROM Keywords
-  WHERE id = '${id}'`
+    SELECT *
+    FROM Keywords
+    WHERE id = '${id}'
+  `
 };
 
 export const selectProductionCompanyById = (id: number): string => {
   return `
-  SELECT *
-  FROM Production_companies
-  WHERE id = '${id}'`
+    SELECT *
+    FROM Production_companies
+    WHERE id = '${id}'
+  `
 };
 
 export const selectMovie = (imdbId: string): string => {
   return `
-  SELECT *
-  FROM Movies
-  WHERE imdb_id = '${imdbId}'`
+    SELECT *
+    FROM Movies
+    WHERE imdb_id = '${imdbId}'
+  `
 };
 
 export const selectMovieId = (imdbId: string): string => {
   return `
-  SELECT *
-  FROM Movies
-  WHERE imdb_id = '${imdbId}'`
+    SELECT *
+    FROM Movies
+    WHERE imdb_id = '${imdbId}'
+  `
 };
 
 export const selectRatingsByUserID = (userId: number): string => {

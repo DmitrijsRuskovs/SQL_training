@@ -117,7 +117,7 @@ describe("Queries Across Tables", () => {
         FROM MOVIE_ACTORS t1
         LEFT JOIN MOVIES AS t2 
         ON t2.id = t1.movie_id       
-        GROUP BY t1.original_title
+        GROUP BY t2.original_title
         ORDER BY count DESC
         LIMIT 1;            
       `;
