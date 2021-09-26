@@ -9,7 +9,12 @@ describe("Simple Queries", () => {
     }, minutes(1));
 
     it("should select app count with rating of 5 stars", async done => {
-        const query = `todo`;
+        const query = `
+          SELECT         
+          COUNT(*) AS count
+          FROM APPS  
+          WHERE rating = 5.0;            
+        `;
         const result = await db.selectSingleRow(query);
         expect(result).toEqual({
             count: 731
@@ -18,7 +23,15 @@ describe("Simple Queries", () => {
     }, minutes(1));
 
     it("should select top 3 develepors with most apps published", async done => {
-        const query = `todo`;
+        const query = `
+          SELECT
+          developer AS developer,
+          COUNT(*) AS count
+          FROM APPS  
+          GROUP BY developer   
+          ORDER BY count DESC, developer ASC
+          LIMIT 3;            
+        `;
 
         const result = await db.selectMultipleRows(query);
         expect(result).toEqual([
@@ -30,7 +43,16 @@ describe("Simple Queries", () => {
     }, minutes(1));
 
     it("should select count of reviews created in year 2014, 2015 and 2016", async done => {
-        const query = `todo`;
+        const query = `
+          SELECT
+          substr(date_created, -4, 4) as year,
+          COUNT(*) AS review_count 
+          FROM REVIEWS
+          WHERE year='2014' OR year='2015' or year='2016'
+          GROUP BY year
+          ORDER BY year
+          LIMIT 3;
+        `;
         const result = await db.selectMultipleRows(query);
         expect(result).toEqual([
             { year: "2014", review_count: 6157 },

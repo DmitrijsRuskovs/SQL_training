@@ -10,14 +10,14 @@ import {
     selectRowById, 
     selectCategoryByTitle, 
     selectAppCategoriesByAppId, 
-    selectUnigueRowCount } from "../src/queries/select";
+    selectUnigueRowCount} from "../src/queries/select";
 import { resolve } from "path";
 
 const pricingPlansDir = resolve(__dirname, "../_data/pricing_plans.csv");
 
 const insertApps = (apps: App[]) => {
     return (
-        `todo` + 
+        `INSERT INTO apps (url, title, tagline, developer, developer_link, icon, rating, reviews_count, description, pricing_hint) values` +         
         apps.map(app => `('${app.url}',
             '${escape(app.title)}',
             '${escape(app.tagline)}',
@@ -33,14 +33,14 @@ const insertApps = (apps: App[]) => {
 
 const insertCategories = (categories: Category[]) => {
     return (
-        `todo` + 
+        `INSERT INTO categories (title) values` + 
         categories.map(category => `('${category.title}')`).join(",")
     );
 };
 
 const insertAppCategories = (appCategories: AppCategory[]) => {
     return (
-        `todo` + 
+        `INSERT INTO apps_categories (app_id, category_id) values` + 
         appCategories.map(appCategory => 
             `('${appCategory.shopifyAppId}',
             '${appCategory.categoryId}')`).join(",")
@@ -49,7 +49,7 @@ const insertAppCategories = (appCategories: AppCategory[]) => {
 
 const insertKeyBenefits = (keyBenefits: KeyBenefit[]) => {
     return (
-        `todo` + 
+        `INSERT INTO key_benefits (app_id, title, description) values` + 
         keyBenefits.map(keyBenefit => 
             `('${keyBenefit.shopifyAppId}',
             '${escape(keyBenefit.title)}',
@@ -59,15 +59,15 @@ const insertKeyBenefits = (keyBenefits: KeyBenefit[]) => {
 
 const insertPricingPlans = (pricingPlans: string[]) => {
     return (
-        `todo` + 
+        `INSERT INTO pricing_plans (price) values` + 
         pricingPlans.map(pricingPlan => 
-            `('${pricingPlan}')`).join(",")
+            `('${escape(pricingPlan)}')`).join(",")
     );
 };
 
 const insertReviews = (reviews: Review[]) => {
     return (
-        `todo`+ 
+        `INSERT INTO reviews (app_id, author, body, rating, helpful_count, date_created, developer_reply, developer_reply_date) values` + 
             reviews.map(review => `(
                 ${review.shopifyAppId},
                 '${escape(review.author)}',
@@ -81,12 +81,21 @@ const insertReviews = (reviews: Review[]) => {
 };
 
 const insertAppPricingPlans = (pricingPlans: PricingPlan[], prices: PricingPlanPrice[]) => {
-    return (
-        `todo` + 
+     var databaseInputPart = pricingPlans.map(
+        pricingPlan => 
+        { 
+          var currentRow = prices.find(row => row.price == pricingPlan.price);     
+          return `(${pricingPlan.shopifyAppId}, ${currentRow ? currentRow.id : 0})`;
+        }
+      );
+      return (`INSERT INTO apps_pricing_plans (app_id, pricing_plan_id) VALUES` + databaseInputPart.join(','));  
+   
+    /*return (
+        `INSERT INTO apps_pricing_plans (app_id, pricing_plan_id) VALUES` + 
         pricingPlans.map(pricingPlan => 
             `('${pricingPlan.shopifyAppId}', '${prices.find(it => it.price === pricingPlan.price)!.id}')
             `).join(",")
-    );
+    );*/
 };
 
 describe("Insert Data", () => {
@@ -95,7 +104,7 @@ describe("Insert Data", () => {
     beforeAll(async () => {
         db = await Database.fromExisting("01", "02");
         await ShopifyCsvLoader.load();
-    }, seconds(30));
+    }, seconds(100));
 
     it("should insert apps data", async done => {
         const apps = await ShopifyCsvLoader.apps();
@@ -112,7 +121,7 @@ describe("Insert Data", () => {
 
         done();
     },
-    minutes(1));
+    minutes(2));
 
     it("should insert categories data", async done => {
         const categories = await ShopifyCsvLoader.categories();
@@ -129,7 +138,7 @@ describe("Insert Data", () => {
 
         done();
     },
-    minutes(1));
+    minutes(2));
 
     it("should insert app categories data", async done => {
         const appCategories = await ShopifyCsvLoader.appCategories();
@@ -150,7 +159,7 @@ describe("Insert Data", () => {
         ]);
         done();
     },
-    minutes(1));
+    minutes(2));
 
     it("should insert key benefits data", async done => {
         const keyBenefits = await ShopifyCsvLoader.keyBenefits();
@@ -164,7 +173,7 @@ describe("Insert Data", () => {
         expect(uniqueValues.c).toEqual(7281);
         done();
     },
-    minutes(1));
+    minutes(2));
 
     it("should insert pricing plans", async done => {
         const pricingPlans = await ShopifyCsvLoader.loadUniquePricingPlans(pricingPlansDir);
@@ -177,7 +186,7 @@ describe("Insert Data", () => {
         expect(row.price).toEqual("$23.70/month");
         done();
     },
-    minutes(1));
+    minutes(2));
 
     it("should insert review data", async done => {
         const reviews = await ShopifyCsvLoader.reviews();
@@ -199,8 +208,8 @@ describe("Insert Data", () => {
 
     it("should insert apps pricing plans data", async done => {
         const pricePlans = await ShopifyCsvLoader.pricingPlans();
-        const prices = (await db.selectMultipleRows(`todo`)) as PricingPlanPrice[];
-        
+        const prices = (await db.selectMultipleRows('SELECT * FROM pricing_plans')) as PricingPlanPrice[];
+         
         const chunks = _.chunk(pricePlans, 500);
         for (const ch of chunks){
             await db.insert(insertAppPricingPlans(ch, prices));
@@ -210,5 +219,5 @@ describe("Insert Data", () => {
         expect(count.c).toEqual(4896);
         done();
     },
-    minutes(1));
+    minutes(2));
 });

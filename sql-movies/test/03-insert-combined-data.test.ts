@@ -11,7 +11,9 @@ import { Rating } from "../src/data/types";
 import { minutes } from "./utils";
 
 const insertRatings = (movieId: number, ratings: Rating[]) => {
-  throw new Error(`todo`);
+  return (
+    `INSERT INTO MOVIE_RATINGS (movie_id, user_id, rating, time_created) VALUES` +
+    ratings.map(rating => `(${movieId}, ${rating.userId}, ${rating.rating}, '${rating.time_created}')`).join(","));
 };
 
 describe("Insert Combined Data", () => {

@@ -14,7 +14,15 @@ describe("Foreign Keys", () => {
 
     it("should not be able to delete category if any app is linked", async done => {
         const categoryId = 6;
-        const query = `todo`;
+        const query = `
+          DELETE FROM CATEGORIES
+          WHERE id = ${categoryId}
+          NOT EXISTS (
+            SELECT 1 
+            FROM APPS_CATEGORIES
+            WHERE category_id =  ${categoryId}
+          )
+        `;
         try {
             await db.delete(query);
           } catch (e) {}
@@ -27,7 +35,15 @@ describe("Foreign Keys", () => {
 
     it("should not be able to delete pricing plan if any app is linked", async done => {
         const pricingPlanId = 100;
-        const query = `todo`;
+        const query = `
+          DELETE FROM PRICING_PLANS
+          WHERE id = ${pricingPlanId}
+          NOT EXISTS (
+            SELECT 1 
+            FROM APPS_PRICING_PLANS
+            WHERE pricing_plan_id =  ${pricingPlanId}
+          )
+        `;
 
         try {
             await db.delete(query);
@@ -41,7 +57,30 @@ describe("Foreign Keys", () => {
 
     it("should not be able to delete app if any data is linked", async done => {
         const appId = 245;
-        const query = `todo`;
+        const query = `
+          DELETE FROM APPS
+          WHERE id = ${appId}
+          NOT EXISTS (
+            SELECT 1 
+            FROM APPS_PRICING_PLANS
+            WHERE app_id =  ${appId}
+          )
+          AND NOT EXISTS (
+            SELECT 1 
+            FROM APPS_CATEGORIES
+            WHERE app_id =  ${appId}
+          )
+          AND NOT EXISTS (
+            SELECT 1 
+            FROM KEY_BENEFITS
+            WHERE app_id =  ${appId}
+          )
+          AND NOT EXISTS (
+            SELECT 1 
+            FROM REVIEWS
+            WHERE app_id =  ${appId}
+          )
+        `;
 
         try {
             await db.delete(query);
@@ -55,7 +94,22 @@ describe("Foreign Keys", () => {
 
     it("should be able to delete app", async done => {
         const appId = 355;
-        const query = `todo`;
+        const query = `
+          DELETE FROM APPS
+          WHERE id = ${appId};
+
+          DELETE FROM APPS_PRICING_PLANS
+          WHERE app_id = ${appId};
+        
+          DELETE FROM APPS_CATEGORIES
+          WHERE app_id = ${appId};
+          
+          DELETE FROM REVIEWS
+          WHERE app_id = ${appId};
+
+          DELETE FROM KEY_BENEFITS
+          WHERE app_id = ${appId};
+        `;
         try {
             await db.delete(query);
           } catch (e) {}
